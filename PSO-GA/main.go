@@ -23,12 +23,32 @@ func pythonCall(progName string){
 
 func main() {
 	//go pythonCall("tsp_pso.py")
-	fmt.Println("PSO complete")
+	//fmt.Println("PSO complete")
 
+	int_lb_iterations := userVariableImports.DefineLBiterationsPSO()
+    	fmt.Println("lower bound of iterations", int_lb_iterations)
 
-	userVariableImports.DefinePSOVariables()
-	//fmt.Println(L.int_lb_iterations)
-	
+	int_ub_iterations := userVariableImports.DefineUBiterationsPSO()
+    	fmt.Println("upper bound of iterations", int_ub_iterations)
+
+	int_lb_size_population := userVariableImports.DefineLBpopulationPSO()
+	fmt.Println("lower bound of population size", int_lb_size_population)
+
+	int_ub_size_population := userVariableImports.DefineUBpopulationPSO()
+	fmt.Println("upper bound of population size", int_ub_size_population)
+
+	float_lb_beta := userVariableImports.DefineLBbetaPSO()
+	fmt.Println("lower bound of beta", float_lb_beta)
+
+	float_ub_beta := userVariableImports.DefineUBbetaPSO()
+	fmt.Println("upper bound of beta", float_ub_beta)
+
+	float_lb_alfa := userVariableImports.DefineLBalfaPSO()
+	fmt.Println("lower bound of alpha", float_lb_alfa)
+
+	float_ub_alfa := userVariableImports.DefineUBalfaPSO()
+	fmt.Println("upper bound of alpha", float_ub_alfa)
+
 /*
 
 	for i := startWithNumberOfClustersInt; i <= endWithNumberOfClustersInt; i++ {
