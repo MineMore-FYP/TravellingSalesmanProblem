@@ -17,6 +17,22 @@ import random, sys, time, copy
 
 import userScript
 
+# define PSO input parameter : number of iterations
+iterations=sys.argv[1]
+INTiterations=int(iterations)
+
+# define PSO input parameter : size of population
+size_population=sys.argv[2]
+INTsize_population=int(size_population)
+
+# define PSO input parameter : beta
+beta=sys.argv[3]
+FLOATbeta=float(beta)
+
+# define PSO input parameter : alpha
+alfa=sys.argv[4]
+FLOATalfa=float(alfa)
+
 
 # class that represents a graph
 class Graph:
@@ -289,7 +305,7 @@ if __name__ == "__main__":
 		graph.addEdge(key, value1, value2)
 
 	# creates a PSO instance
-	pso = PSO(graph, userScript.iterations, userScript.size_population, userScript.beta, userScript.alfa)
+	pso = PSO(graph, INTiterations, INTsize_population, FLOATbeta, FLOATalfa)
 	pso.run() # runs the PSO algorithm
 	pso.showsParticles() # shows the particles
 
