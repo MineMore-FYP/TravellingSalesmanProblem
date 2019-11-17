@@ -1,6 +1,8 @@
 import numpy
 import ga
 
+import userScript
+ 
 """
 The y=target is to maximize this equation ASAP:
     y = w1x1+w2x2+w3x3+w4x4+w5x5+6wx6
@@ -20,13 +22,13 @@ Genetic algorithm parameters:
     Mating pool size
     Population size
 """
-sol_per_pop = 8
-num_parents_mating = 4
+sol_per_pop = userScript.sol_per_pop
+num_parents_mating = userScript.num_parents_mating
 
 # Defining the population size.
 pop_size = (sol_per_pop,num_weights) # The population will have sol_per_pop chromosome where each chromosome has num_weights genes.
 #Creating the initial population.
-new_population = numpy.random.uniform(low=-4.0, high=4.0, size=pop_size)
+new_population = numpy.random.uniform(low=userScript.initial_low, high=userScript.initial_high, size=pop_size)
 print(new_population)
 
 """
@@ -39,7 +41,8 @@ new_population[5, :] = [-2,   3,   -7, 6,   3,    3]
 """
 
 best_outputs = []
-num_generations = 1000
+num_generations = userScript.num_generations
+
 for generation in range(num_generations):
     print("Generation : ", generation)
     # Measuring the fitness of each chromosome in the population.
