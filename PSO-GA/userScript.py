@@ -46,8 +46,8 @@ lb_alfa=0.8
 # Upper Bound
 ub_iterations=101 
 ub_size_population=11
-ub_beta=1.5
-ub_alfa=1.4
+ub_beta=1.1
+ub_alfa=1
 
 
 # GENETIC ALGORITHM - Parameters :
