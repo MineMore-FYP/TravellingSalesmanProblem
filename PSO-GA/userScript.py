@@ -37,11 +37,6 @@ tspGraph= {(0, 1, 1),
 	
 
 # PARTICLE SWARM OPTIMIZATION ALGORITHM - Parameters :
-iterations=100 
-size_population=10
-beta=1
-alfa=0.9
-
 # Lower Bound
 lb_iterations=99 
 lb_size_population=9
@@ -51,8 +46,9 @@ lb_alfa=0.8
 # Upper Bound
 ub_iterations=101 
 ub_size_population=11
-ub_beta=1.1
-ub_alfa=1
+ub_beta=1.5
+ub_alfa=1.4
+
 
 # GENETIC ALGORITHM - Parameters :
 
