@@ -36,7 +36,7 @@ tspGraph= {(0, 1, 1),
 	(4, 3, 2)}
 	
 
-# Particle Swarm Optimization Algorithm - Parameters :
+# PARTICLE SWARM OPTIMIZATION ALGORITHM - Parameters :
 iterations=100 
 size_population=10
 beta=1
@@ -54,7 +54,7 @@ ub_size_population=11
 ub_beta=1.1
 ub_alfa=1
 
-# Genetic algorithm - Parameters :
+# GENETIC ALGORITHM - Parameters :
 
 # Mating pool size
 num_parents_mating = 4
@@ -67,12 +67,6 @@ initial_low = -4.0
 # Random Initial Population Upper Bound
 initial_high = 4.0
 
-#print(tspGraph)
-
-#for key, value1, value2 in tspGraph:
-#	print("key",key)
-#	print("value1",value1)
-#	print("value2",value2)
 		
 
 
