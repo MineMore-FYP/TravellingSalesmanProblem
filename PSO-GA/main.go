@@ -32,21 +32,21 @@ func pythonCallFourParams(progName string, para1 string, para2 string, para3 str
 
 func main() {
 
-	int_lb_iterations := userVariableImports.DefineLBiterationsPSO()
+	int_lb_iterations := userVariableImports.ImportAsInt("lb_iterations")
    
-	int_ub_iterations := userVariableImports.DefineUBiterationsPSO()
+	int_ub_iterations := userVariableImports.ImportAsInt("ub_iterations")
     	
-	int_lb_size_population := userVariableImports.DefineLBpopulationPSO()
+	int_lb_size_population := userVariableImports.ImportAsInt("lb_size_population")
 	
-	int_ub_size_population := userVariableImports.DefineUBpopulationPSO()
+	int_ub_size_population := userVariableImports.ImportAsInt("lb_size_population")
 	
-	float_lb_beta := userVariableImports.DefineLBbetaPSO()
+	float_lb_beta := userVariableImports.ImportAsFloat("lb_beta")
 	
-	float_ub_beta := userVariableImports.DefineUBbetaPSO()
+	float_ub_beta := userVariableImports.ImportAsFloat("ub_beta")
 	
-	float_lb_alfa := userVariableImports.DefineLBalfaPSO()
+	float_lb_alfa := userVariableImports.ImportAsFloat("lb_alfa")
 	
-	float_ub_alfa := userVariableImports.DefineUBalfaPSO()
+	float_ub_alfa := userVariableImports.ImportAsFloat("ub_alfa")
 
 	for i := int_lb_iterations; i <= int_ub_iterations; i++ {
 		for j := int_lb_size_population; j <= int_ub_size_population; j++ {
