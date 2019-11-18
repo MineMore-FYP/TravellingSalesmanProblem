@@ -1,0 +1,18 @@
+
+func DefineVariable(importCommand string){
+	cmd_importCommand := exec.Command("python", "-c", importCommand)
+	out_importCommand,err_importCommand := cmd_importCommand.CombinedOutput()
+	if err_importCommand != nil {
+		fmt.Println(err_importCommand)
+	}
+
+	lb_iterations := string(out_importCommand)[:len(out_importCommand)-1]
+	int_lb_iterations, err_int_lb_iterations := strconv.Atoi(lb_iterations)
+	if err_int_lb_iterations != nil {
+		fmt.Println(err_int_lb_iterations)
+	}
+	
+	fmt.Println(int_lb_iterations)
+	//return int_lb_iterations
+}
+
