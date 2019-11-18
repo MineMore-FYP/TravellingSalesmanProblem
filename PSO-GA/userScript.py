@@ -9,9 +9,6 @@ amount_vertices=5
 
 # Graph nodes
 
-# Graph structure defined
-#tspGraph = OrderedDict()
-
 # Define graph vertices in the following format
 # (source node, destination node, cost of edge) 
 tspGraph= {(0, 1, 1), 
