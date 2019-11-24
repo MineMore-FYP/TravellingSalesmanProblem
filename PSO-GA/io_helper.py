@@ -23,7 +23,7 @@ def read_tsp(filename):
                 node_coord_start = i
             i = i+1
 
-        print('Problem with {} cities read.'.format(dimension))
+        print('\nProblem with {} cities read.\n'.format(dimension))
 
         f.seek(0)
 

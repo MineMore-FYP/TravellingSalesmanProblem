@@ -120,10 +120,10 @@ class CompleteGraph(Graph):
 					self.addEdge(i, j, weight)
 
 
-def getTime():
-	now = datetime.now()
-	c_time = now.strftime("%H:%M:%S")
-	return c_time
+def getDuration(startTime,endTime):
+	difference = endTime - startTime
+	#difference = difference.strftime("%H:%M:%S")
+	return difference
 
 @python_app
 def calCost(df1,df2,k):
@@ -136,7 +136,7 @@ def calCost(df1,df2,k):
 	x = round(distance)
 	return x
 
-def createGraph():
+def createGraph(iterations,size_population,beta,alfa):
 
 	problem = read_tsp(tsp_file_path)
 	
@@ -151,7 +151,9 @@ def createGraph():
 	columns = ['City1','City2', 'Cost']
 	df_new = pd.DataFrame(columns=columns)
 
-	print('Calculating costs between all the edges .....')
+	startTime = datetime.now().replace(microsecond=0)
+	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges for iterations :' + iterations + ' ,size_population :' + size_population+ ' ,beta:' + beta + ' ,alfa :' + alfa + ' .....\n')
+	
 	items = range(1,vertices)
 	for i in items:
 		points2 = pd.DataFrame(np.roll(points, i, axis=0))
@@ -160,20 +162,26 @@ def createGraph():
 			x = calCost(points,points2,j)
 			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x.result()} , ignore_index=True)
 			
-	
+
 	print(df_new)
+	
+	endTime = datetime.now().replace(microsecond=0)
+	
 	np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')
-	print("Caluculation Done!")
+	
+	print('\nEnd Time: ' + str(endTime) + ' Caluculation Done!\n')
+	print('Duration to calculate costs of edges: ' + str(getDuration(startTime,endTime)))
+	
 	listnew = df_new.values.tolist()
-	print("Created new list")
+	print("\nCreated new list\n")
 	
 	tspGraph = set(tuple(x) for x in listnew)
-	print("Created new set")
+	print("Created new set\n")
 	
 	# This graph is in the folder "images" of the repository.
 	for value1, value2, key in tspGraph:
 		graph.addEdge(value1, value2, key)
-	print("Added all the edges!")
+	print("Added all the edges!\n")
 	
 	return graph
 	
