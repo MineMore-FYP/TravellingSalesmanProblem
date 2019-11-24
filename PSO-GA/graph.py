@@ -22,9 +22,26 @@ import pandas as pd
 import math
 from datetime import datetime
 
+import parsl
+from parsl import load, python_app
+from parsl.config import Config
+from parsl.executors.threads import ThreadPoolExecutor
+
+
 from io_helper import read_tsp
 
 from userScript import tsp_file_path
+
+config = Config(
+    executors=[
+        ThreadPoolExecutor(
+            max_threads=8,
+            label='threads'
+        )
+    ]
+)
+
+parsl.load(config)
 
 # class that represents a graph
 class Graph:
@@ -103,10 +120,21 @@ class CompleteGraph(Graph):
 					self.addEdge(i, j, weight)
 
 
-def getTime():
-	now = datetime.now()
-	c_time = now.strftime("%H:%M:%S")
-	return c_time
+def getDuration(startTime,endTime):
+	difference = endTime - startTime
+	#difference = difference.strftime("%H:%M:%S")
+	return difference
+
+@python_app
+def calCost(df1,df2,k):
+
+	xcost = df1['x'].iloc[k] - df2['x2'].iloc[k]
+	ycost = df1['y'].iloc[k] - df2['y2'].iloc[k]
+			
+	distance = math.sqrt(xcost**2 + ycost**2)
+
+	x = round(distance)
+	return x
 
 def createGraph():
 
@@ -123,34 +151,39 @@ def createGraph():
 	columns = ['City1','City2', 'Cost']
 	df_new = pd.DataFrame(columns=columns)
 
-	print('Calculating costs between all the edges .....')
+	startTime = datetime.now().replace(microsecond=0)
+	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges .....\n')
+	
 	items = range(1,vertices)
 	for i in items:
 		points2 = pd.DataFrame(np.roll(points, i, axis=0))
 		points2.columns = ['city2','x2', 'y2']
 		for j in range(0,vertices):
-			xcost = points['x'].iloc[j] - points2['x2'].iloc[j]
-			ycost = points['y'].iloc[j] - points2['y2'].iloc[j]
+			x = calCost(points,points2,j)
+			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x.result()} , ignore_index=True)
 			
-			distance = math.sqrt(xcost**2 + ycost**2)
 
-			x = round(distance)
-			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x} , ignore_index=True)
-			
-	
 	print(df_new)
+	
+	endTime = datetime.now().replace(microsecond=0)
+	
 	np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')
-	print("Caluculation Done!")
+	
+	print('\nEnd Time: ' + str(endTime) + ' Caluculation Done!\n')
+	print('Duration to calculate costs of edges: ' + str(getDuration(startTime,endTime)))
+	
 	listnew = df_new.values.tolist()
-	print("Created new list")
+	print("\nCreated new list\n")
 	
 	tspGraph = set(tuple(x) for x in listnew)
-	print("Created new set")
+	print("Created new set\n")
 	
 	# This graph is in the folder "images" of the repository.
 	for value1, value2, key in tspGraph:
 		graph.addEdge(value1, value2, key)
-	print("Added all the edges!")
+	print("Added all the edges!\n")
 	
 	return graph
 	
+
+graph = createGraph()
