@@ -22,9 +22,26 @@ import pandas as pd
 import math
 from datetime import datetime
 
+import parsl
+from parsl import load, python_app
+from parsl.config import Config
+from parsl.executors.threads import ThreadPoolExecutor
+
+
 from io_helper import read_tsp
 
 from userScript import tsp_file_path
+
+config = Config(
+    executors=[
+        ThreadPoolExecutor(
+            max_threads=8,
+            label='threads'
+        )
+    ]
+)
+
+parsl.load(config)
 
 # class that represents a graph
 class Graph:
@@ -108,6 +125,17 @@ def getTime():
 	c_time = now.strftime("%H:%M:%S")
 	return c_time
 
+@python_app
+def calCost(df1,df2,k):
+
+	xcost = df1['x'].iloc[k] - df2['x2'].iloc[k]
+	ycost = df1['y'].iloc[k] - df2['y2'].iloc[k]
+			
+	distance = math.sqrt(xcost**2 + ycost**2)
+
+	x = round(distance)
+	return x
+
 def createGraph():
 
 	problem = read_tsp(tsp_file_path)
@@ -129,13 +157,8 @@ def createGraph():
 		points2 = pd.DataFrame(np.roll(points, i, axis=0))
 		points2.columns = ['city2','x2', 'y2']
 		for j in range(0,vertices):
-			xcost = points['x'].iloc[j] - points2['x2'].iloc[j]
-			ycost = points['y'].iloc[j] - points2['y2'].iloc[j]
-			
-			distance = math.sqrt(xcost**2 + ycost**2)
-
-			x = round(distance)
-			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x} , ignore_index=True)
+			x = calCost(points,points2,j)
+			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x.result()} , ignore_index=True)
 			
 	
 	print(df_new)
