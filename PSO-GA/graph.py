@@ -139,6 +139,7 @@ def createGraph():
 			
 	
 	print(df_new)
+	np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')
 	print("Caluculation Done!")
 	listnew = df_new.values.tolist()
 	print("Created new list")
