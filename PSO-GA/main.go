@@ -5,7 +5,7 @@ import (
   "os/exec"
   "fmt"
   "log"
-  "time"
+  //"time"
   "strconv"
   userVariableImports "./userVariableImports"
 )
@@ -64,11 +64,11 @@ func main() {
 		}
 	}
 	
-	time.Sleep(10000 * time.Millisecond)
+	//time.Sleep(10000 * time.Millisecond)
 
-	go pythonCall("tsp_ga.py")
-	fmt.Println("GA complete")
-	time.Sleep(10000 * time.Millisecond)
+	//go pythonCall("tsp_ga.py")
+	//fmt.Println("GA complete")
+	//time.Sleep(10000 * time.Millisecond)
 
 }
 
