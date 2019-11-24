@@ -136,7 +136,7 @@ def calCost(df1,df2,k):
 	x = round(distance)
 	return x
 
-def createGraph(iterations,size_population,beta,alfa):
+def createGraph():
 
 	problem = read_tsp(tsp_file_path)
 	
@@ -152,7 +152,7 @@ def createGraph(iterations,size_population,beta,alfa):
 	df_new = pd.DataFrame(columns=columns)
 
 	startTime = datetime.now().replace(microsecond=0)
-	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges for iterations :' + iterations + ' ,size_population :' + size_population+ ' ,beta:' + beta + ' ,alfa :' + alfa + ' .....\n')
+	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges .....\n')
 	
 	items = range(1,vertices)
 	for i in items:
@@ -185,3 +185,5 @@ def createGraph(iterations,size_population,beta,alfa):
 	
 	return graph
 	
+
+graph = createGraph()

@@ -9,7 +9,7 @@
 from operator import attrgetter
 import random, sys, time, copy
 
-import graph
+from graph import graph
 import userScript
 
 # define PSO input parameter : number of iterations
@@ -220,7 +220,7 @@ class PSO:
 
 if __name__ == "__main__":
 
-	graph = graph.createGraph(iterations,size_population,beta,alfa)
+	
 
 	# creates a PSO instance
 	pso = PSO(graph, INTiterations, INTsize_population, FLOATbeta, FLOATalfa)
