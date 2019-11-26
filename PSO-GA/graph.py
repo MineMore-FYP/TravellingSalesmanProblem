@@ -33,6 +33,7 @@ from io_helper import read_tsp
 from userScript import tsp_file_path
 
 config = Config(
+    data_management_max_threads=194,
     executors=[
         ThreadPoolExecutor(
             max_threads=8,

@@ -13,23 +13,23 @@ from graph import graph
 import userScript
 
 # define PSO input parameter : number of iterations
-iterations=sys.argv[1]
-#iterations=99
+#iterations=sys.argv[1]
+iterations=99
 INTiterations=int(iterations)
 
 # define PSO input parameter : size of population
-size_population=sys.argv[2]
-#size_population=9
+#size_population=sys.argv[2]
+size_population=9
 INTsize_population=int(size_population)
 
 # define PSO input parameter : beta
-beta=sys.argv[3]
-#beta=0.9
+#beta=sys.argv[3]
+beta=0.9
 FLOATbeta=float(beta)
 
 # define PSO input parameter : alpha
-alfa=sys.argv[4]
-#alfa=0.8
+#alfa=sys.argv[4]
+alfa=0.8
 FLOATalfa=float(alfa)
 
 
