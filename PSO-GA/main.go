@@ -38,7 +38,7 @@ func main() {
     	
 	int_lb_size_population := userVariableImports.ImportAsInt("lb_size_population")
 	
-	int_ub_size_population := userVariableImports.ImportAsInt("lb_size_population")
+	int_ub_size_population := userVariableImports.ImportAsInt("ub_size_population")
 	
 	float_lb_beta := userVariableImports.ImportAsFloat("lb_beta")
 	

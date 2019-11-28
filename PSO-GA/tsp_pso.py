@@ -9,7 +9,13 @@
 from operator import attrgetter
 import random, sys, time, copy
 
-from graph import graph
+import numpy as np
+
+import parsl
+from parsl import load, python_app
+
+
+from tsp_graph import tsp_graph
 import userScript
 
 # define PSO input parameter : number of iterations
@@ -32,6 +38,18 @@ FLOATbeta=float(beta)
 alfa=0.8
 FLOATalfa=float(alfa)
 
+
+# Lower Bound
+lb_iterations = userScript.lb_iterations 
+lb_size_population= userScript.lb_size_population
+lb_beta= userScript.lb_beta
+lb_alfa= userScript.lb_alfa
+
+# Upper Bound
+ub_iterations=  userScript.ub_iterations
+ub_size_population= userScript.ub_size_population
+ub_beta= userScript.ub_beta
+ub_alfa= userScript.ub_alfa
 
 
 # class that represents a particle
@@ -216,20 +234,35 @@ class PSO:
 				if cost_current_solution < particle.getCostPBest():
 					particle.setPBest(solution_particle)
 					particle.setCostPBest(cost_current_solution)
-		
 
-if __name__ == "__main__":
-
-	
-
+@python_app
+def psoInstance(a,b,c,d):
 	# creates a PSO instance
-	pso = PSO(graph, INTiterations, INTsize_population, FLOATbeta, FLOATalfa)
+	pso = PSO(tsp_graph, i, j, k, l)
 	pso.run() # runs the PSO algorithm
 	pso.showsParticles() # shows the particles
 
 	# shows the global best particle
 	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
+					
+	print("PSO COMPLETED FOR THE ITERATION " + str(i) + " POPULATION " + str(j) + " BETA " + str(k) + " ALFA " + str(l))	
 
+if __name__ == "__main__":
+
+	for i in range(lb_iterations, ub_iterations+1):
+		for j in range(lb_size_population, ub_size_population+1):
+			for k in np.arange(lb_beta, ub_beta, 0.1):
+				for l in np.arange(lb_alfa, ub_alfa, 0.1):
+					psoInstance(i,j,k,l)
+	'''
+	# creates a PSO instance
+	pso = PSO(tsp_graph, INTiterations, INTsize_population, FLOATbeta, FLOATalfa)
+	pso.run() # runs the PSO algorithm
+	pso.showsParticles() # shows the particles
+
+	# shows the global best particle
+	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
+	'''
 	'''
 	# random graph
 	print('Random graph...')

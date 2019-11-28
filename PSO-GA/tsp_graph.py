@@ -31,7 +31,7 @@ from userScript import tsp_file_path
 
 
 import sys
-# insert at 1, 0 is the script path (or '' in REPL)
+# insert at 1, 0 is the script path 
 sys.path.insert(1, '/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/configs')
 
 from local_threads import local_threads
@@ -198,4 +198,4 @@ def createGraph():
 	return graph
 	
 
-graph = createGraph()
+tsp_graph = createGraph()
