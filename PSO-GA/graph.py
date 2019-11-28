@@ -24,25 +24,23 @@ from datetime import datetime
 
 import parsl
 from parsl import load, python_app
-from parsl.config import Config
-from parsl.executors.threads import ThreadPoolExecutor
-
 
 from io_helper import read_tsp
 
 from userScript import tsp_file_path
 
-config = Config(
-    data_management_max_threads=194,
-    executors=[
-        ThreadPoolExecutor(
-            max_threads=8,
-            label='threads'
-        )
-    ]
-)
 
-parsl.load(config)
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/configs')
+
+from local_threads import local_threads
+#from local_htex import local_htex
+#from remote_htex import remote_htex
+
+parsl.load(local_threads)
+#parsl.load(local_htex)
+#parsl.load(remote_htex)
 
 # class that represents a graph
 class Graph:
@@ -149,20 +147,33 @@ def createGraph():
 	# creates the Graph instance
 	graph = Graph(amount_vertices=vertices)
 	
-	columns = ['City1','City2', 'Cost']
+	columns = ['City1','City2']
 	df_new = pd.DataFrame(columns=columns)
 
 	startTime = datetime.now().replace(microsecond=0)
 	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges .....\n')
 	
+	cost = []
 	items = range(1,vertices)
 	for i in items:
 		points2 = pd.DataFrame(np.roll(points, i, axis=0))
 		points2.columns = ['city2','x2', 'y2']
 		for j in range(0,vertices):
 			x = calCost(points,points2,j)
-			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x.result()} , ignore_index=True)
+			cost.append(x)
+			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j]} , ignore_index=True)
 			
+
+	print(df_new)
+	
+	cost_values = []
+
+	for i in cost:
+		cost_values.append(i.result())
+
+	print(cost_values)
+
+	df_new['Cost'] = cost_values
 
 	print(df_new)
 	

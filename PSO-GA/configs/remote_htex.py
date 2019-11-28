@@ -12,7 +12,7 @@ user_opts = {'adhoc':
              }
 }
 
-config = Config(
+remote_htex = Config(
     executors=[
 	
         HighThroughputExecutor(
@@ -37,4 +37,4 @@ config = Config(
     strategy=None,
 )
 
-parsl.load(config)
+

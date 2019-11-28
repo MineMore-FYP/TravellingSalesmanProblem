@@ -22,4 +22,4 @@ local_htex = Config(
     strategy=None,
 )
 
-parsl.load(local_htex)
+
