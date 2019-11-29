@@ -22,25 +22,13 @@ import pandas as pd
 import math
 from datetime import datetime
 
-import parsl
-from parsl import load, python_app
+#import parsl
+#from parsl import load, python_app
 
 from io_helper import read_tsp
 
 from userScript import tsp_file_path
 
-
-import sys
-# insert at 1, 0 is the script path 
-sys.path.insert(1, '/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/configs')
-
-from local_threads import local_threads
-#from local_htex import local_htex
-#from remote_htex import remote_htex
-
-parsl.load(local_threads)
-#parsl.load(local_htex)
-#parsl.load(remote_htex)
 
 # class that represents a graph
 class Graph:
@@ -124,7 +112,7 @@ def getDuration(startTime,endTime):
 	#difference = difference.strftime("%H:%M:%S")
 	return difference
 
-@python_app
+#@python_app
 def calCost(df1,df2,k):
 
 	xcost = df1['x'].iloc[k] - df2['x2'].iloc[k]
@@ -153,30 +141,30 @@ def createGraph():
 	startTime = datetime.now().replace(microsecond=0)
 	print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges .....\n')
 	
-	cost = []
+	#cost = []
 	items = range(1,vertices)
 	for i in items:
 		points2 = pd.DataFrame(np.roll(points, i, axis=0))
 		points2.columns = ['city2','x2', 'y2']
 		for j in range(0,vertices):
-			x = calCost(points,points2,j)
-			cost.append(x)
-			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j]} , ignore_index=True)
+			x1 = calCost(points,points2,j)
+			#cost.append(x1)
+			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x1} , ignore_index=True)
 			
 
 	print(df_new)
-	
+	'''
 	cost_values = []
 
 	for i in cost:
-		cost_values.append(i.result())
+		cost_values.append(i)
 
-	print(cost_values)
+	#print(cost_values)
 
 	df_new['Cost'] = cost_values
 
 	print(df_new)
-	
+	'''
 	endTime = datetime.now().replace(microsecond=0)
 	
 	np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')

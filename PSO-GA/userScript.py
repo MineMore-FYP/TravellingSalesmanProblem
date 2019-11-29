@@ -19,8 +19,10 @@ ub_beta=1.1
 ub_alfa=1
 
 # Calculate Cost - Parameters(cost.py): 
-tsp_file_path = 'assets/qa194.tsp'
+tsp_file_path = 'assets/e23.tsp'
 
+
+'''
 # GENETIC ALGORITHM - Parameters :
 
 # Mating pool size
@@ -33,7 +35,7 @@ num_generations = 1000
 initial_low = -4.0
 # Random Initial Population Upper Bound
 initial_high = 4.0
-
+'''
 		
 
 

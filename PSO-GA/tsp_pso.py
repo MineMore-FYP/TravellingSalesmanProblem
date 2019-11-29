@@ -10,14 +10,27 @@ from operator import attrgetter
 import random, sys, time, copy
 
 import numpy as np
+import pandas as pd
 
 import parsl
 from parsl import load, python_app
 
 
-from tsp_graph import tsp_graph
+
 import userScript
 
+import sys
+# insert at 1, 0 is the script path 
+sys.path.insert(1, '/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/configs')
+
+from local_threads import local_threads
+#from local_htex import local_htex
+#from remote_htex import remote_htex
+
+parsl.load(local_threads)
+#parsl.load(local_htex)
+#parsl.load(remote_htex)
+'''
 # define PSO input parameter : number of iterations
 #iterations=sys.argv[1]
 iterations=99
@@ -37,7 +50,7 @@ FLOATbeta=float(beta)
 #alfa=sys.argv[4]
 alfa=0.8
 FLOATalfa=float(alfa)
-
+'''
 
 # Lower Bound
 lb_iterations = userScript.lb_iterations 
@@ -235,41 +248,65 @@ class PSO:
 					particle.setPBest(solution_particle)
 					particle.setCostPBest(cost_current_solution)
 
-@python_app
-def psoInstance(a,b,c,d):
-	# creates a PSO instance
-	pso = PSO(tsp_graph, i, j, k, l)
-	pso.run() # runs the PSO algorithm
-	pso.showsParticles() # shows the particles
+#gbest_path_with_cost_at_tail = []
 
+@python_app(cache='True')
+def psoInstance_path(a,b,c,d):
+	import tsp_graph
+	# creates a PSO instance
+	pso = PSO(tsp_graph.tsp_graph, i, j, k, l)
+	pso.run() # runs the PSO algorithm
+	#pso.showsParticles() # shows the particles
+	
+	
+	gbest_path = pso.getGBest().getPBest()
+	gbest_path_cost = pso.getGBest().getCostPBest()
+	#gbest_path.append(gbest_path_cost)
 	# shows the global best particle
-	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
+	#print('gbest: %s\n' % (gbest_path))
 					
-	print("PSO COMPLETED FOR THE ITERATION " + str(i) + " POPULATION " + str(j) + " BETA " + str(k) + " ALFA " + str(l))	
+	#print("PSO COMPLETED FOR THE ITERATION " + str(i) + " POPULATION " + str(j) + " BETA " + str(k) + " ALFA " + str(l))
+	return [gbest_path,gbest_path_cost]
+
+
 
 if __name__ == "__main__":
+	columns = ['ITERATION','POPULATION','BETA','ALFA']
+	df_new = pd.DataFrame(columns=columns)
 
+	gbest_paths_of_all_psos = []
+	costs_of_all_psoInstances = []
 	for i in range(lb_iterations, ub_iterations+1):
 		for j in range(lb_size_population, ub_size_population+1):
 			for k in np.arange(lb_beta, ub_beta, 0.1):
 				for l in np.arange(lb_alfa, ub_alfa, 0.1):
-					psoInstance(i,j,k,l)
-	'''
-	# creates a PSO instance
-	pso = PSO(tsp_graph, INTiterations, INTsize_population, FLOATbeta, FLOATalfa)
-	pso.run() # runs the PSO algorithm
-	pso.showsParticles() # shows the particles
+					gbest_path1 = psoInstance_path(i,j,k,l)
+					gbest_paths_of_all_psos.append(gbest_path1)
+					#costs_of_all_psoInstances.append(gbest_path_cost1)
+					df_new = df_new.append({'ITERATION' : i , 'POPULATION' : j , 'BETA' : k , 'ALFA' : l},  ignore_index=True)
+	
+	
+	print(df_new)
+	
+	gbest_path1_values = []
 
-	# shows the global best particle
-	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
-	'''
-	'''
-	# random graph
-	print('Random graph...')
-	random_graph = CompleteGraph(amount_vertices=20)
-	random_graph.generates()
-	pso_random_graph = PSO(random_graph, iterations=10000, size_population=10, beta=1, alfa=1)
-	pso_random_graph.run()
-	print('gbest: %s | cost: %d\n' % (pso_random_graph.getGBest().getPBest(), 
-					pso_random_graph.getGBest().getCostPBest()))
-	'''
+	for i in gbest_paths_of_all_psos:
+		gbest_path1_values.append(i.result())
+
+	#print(gbest_path1_values)
+	
+	path = []
+	cost = []
+
+	for i in gbest_path1_values:
+		path.append(i[0])
+		cost.append(i[1])
+
+	df_new['Path'] = path
+	df_new['Cost'] = cost
+
+	print(df_new)
+
+
+	df_new.to_csv (r'/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
+	

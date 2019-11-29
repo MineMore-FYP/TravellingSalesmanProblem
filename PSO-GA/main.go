@@ -6,8 +6,10 @@ import (
   "fmt"
   "log"
   "time"
-  "strconv"
-  userVariableImports "./userVariableImports"
+  "encoding/csv"
+  "io"	
+  //"strconv"
+  //userVariableImports "./userVariableImports"
 )
 
 func SendValue(s string, c chan string){
@@ -31,44 +33,41 @@ func pythonCallFourParams(progName string, para1 string, para2 string, para3 str
 }
 
 func main() {
+	
 
-	int_lb_iterations := userVariableImports.ImportAsInt("lb_iterations")
-   
-	int_ub_iterations := userVariableImports.ImportAsInt("ub_iterations")
-    	
-	int_lb_size_population := userVariableImports.ImportAsInt("lb_size_population")
+	go pythonCall("tsp_pso.py")
+	fmt.Println("PSO 1st level started")
+	time.Sleep(5000 * time.Millisecond)
+	fmt.Println("PSO 1st level ended")
 	
-	int_ub_size_population := userVariableImports.ImportAsInt("ub_size_population")
 	
-	float_lb_beta := userVariableImports.ImportAsFloat("lb_beta")
-	
-	float_ub_beta := userVariableImports.ImportAsFloat("ub_beta")
-	
-	float_lb_alfa := userVariableImports.ImportAsFloat("lb_alfa")
-	
-	float_ub_alfa := userVariableImports.ImportAsFloat("ub_alfa")
-
-	for i := int_lb_iterations; i <= int_ub_iterations; i++ {
-		for j := int_lb_size_population; j <= int_ub_size_population; j++ {
-			for k := float_lb_beta; k <= float_ub_beta ; k += 0.1 {
-				for l := float_lb_alfa ; l <= float_ub_alfa ; l += 0.1{
-					iStr := strconv.Itoa(i)
-					jStr := strconv.Itoa(j)
-					kStr := fmt.Sprintf("%.1f", k)
-					lStr := fmt.Sprintf("%.1f", l)
-					go pythonCallFourParams("tsp_pso.py", iStr, jStr, kStr, lStr)
-					//time.Sleep(1500 * time.Millisecond)
-					fmt.Println("PSO complete. ITERATIONS = ", iStr, " POPULATION SIZE = ", jStr, " BETA = ", kStr, " ALPHA = ", lStr)
-				}
-			}
-		}
+	// Open the file
+	csvfile, err := os.Open("/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv")
+	if err != nil {
+		log.Fatalln("Couldn't open the csv file", err)
 	}
-	
-	time.Sleep(10000 * time.Millisecond)
 
-	go pythonCall("tsp_ga.py")
-	fmt.Println("GA complete")
-	time.Sleep(10000 * time.Millisecond)
+	// Parse the file
+	r := csv.NewReader(csvfile)
+	//r := csv.NewReader(bufio.NewReader(csvfile))
+	
+	// Iterate through the records
+	for {
+		// Read each record from csv
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		
+		path := record[4]
+		cost := record[5]
+		fmt.Printf(paths)
+	}
+
+	
 
 }
 
