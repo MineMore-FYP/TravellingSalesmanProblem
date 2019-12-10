@@ -19,7 +19,7 @@ ub_beta=1.1
 ub_alfa=1
 
 # Calculate Cost - Parameters(cost.py): 
-tsp_file_path = 'assets/e23.tsp'
+tsp_file_path = 'assets/qa194.tsp'
 
 
 '''

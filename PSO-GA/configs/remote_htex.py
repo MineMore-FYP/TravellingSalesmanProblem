@@ -50,7 +50,7 @@ remote_htex = Config(
             ),
         )
     ],
-    max_idletime=2.0,
+    max_idletime=120.0,
     #  AdHoc Clusters should not be setup with scaling strategy.
     strategy=None,
 )

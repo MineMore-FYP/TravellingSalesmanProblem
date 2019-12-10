@@ -16,19 +16,19 @@ import parsl
 from parsl import load, python_app
 
 
-
+import tsp_graph
 import userScript
 
 import sys
 # insert at 1, 0 is the script path 
-sys.path.insert(1, '/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/configs')
+sys.path.insert(1, '/home/mpiuser/Documents/FYP/PSO-GA/configs')
 
-from local_threads import local_threads
-#from local_htex import local_htex
+#from local_threads import local_threads
+from local_htex import local_htex
 #from remote_htex import remote_htex
 
-parsl.load(local_threads)
-#parsl.load(local_htex)
+#parsl.load(local_threads)
+parsl.load(local_htex)
 #parsl.load(remote_htex)
 '''
 # define PSO input parameter : number of iterations
@@ -182,14 +182,37 @@ class PSO:
 	def run(self):
 
 		# for each time step (iteration)
-		for t in range(self.iterations):
+		for t in range(1,self.iterations):
+			print(t)
+			'''
+			if t%10 == 0:
+				if t != 0:
+					input("Enter ")
+			
+			if t == 10:	
+				input("Enter")
 
+			if t == 20:	
+				input("Enter")
+
+			if t == 30:	
+				input("Enter")
+			if t == 40:	
+				input("Enter")
+
+			if t == 50:	
+				input("Enter")
+
+			if t == 60:	
+				input("Enter")
+			#print("t : " + str(t))
+			'''
 			# updates gbest (best particle of the population)
 			self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
 
 			# for each particle in the swarm
 			for particle in self.particles:
-
+				#print("particle : " + str(particle))
 				particle.clearVelocity() # cleans the speed of the particle
 				temp_velocity = []
 				solution_gbest = copy.copy(self.gbest.getPBest()) # gets solution of the gbest
@@ -248,13 +271,19 @@ class PSO:
 					particle.setPBest(solution_particle)
 					particle.setCostPBest(cost_current_solution)
 
+			#filename = 'savedFiles/iterations_' + str(t) + '.txt'
+			#pbestcost = particle.getCostPBest()
+			#np.savetxt(rfilename, t, fmt = '%i')
+			#print(particle.getCostPBest())
+
 #gbest_path_with_cost_at_tail = []
 
-@python_app(cache='True')
-def psoInstance_path(a,b,c,d):
-	import tsp_graph
+@python_app
+def createPsoInstance(a,b,c,d):
+	print("New PSO instance started")
+	#import tsp_graph
 	# creates a PSO instance
-	pso = PSO(tsp_graph.tsp_graph, i, j, k, l)
+	pso = PSO(tsp_graph.tsp_graph, a, b, c, d)
 	pso.run() # runs the PSO algorithm
 	#pso.showsParticles() # shows the particles
 	
@@ -269,29 +298,26 @@ def psoInstance_path(a,b,c,d):
 	return [gbest_path,gbest_path_cost]
 
 
-
-if __name__ == "__main__":
+def step():
 	columns = ['ITERATION','POPULATION','BETA','ALFA']
 	df_new = pd.DataFrame(columns=columns)
 
 	gbest_paths_of_all_psos = []
-	costs_of_all_psoInstances = []
-	for i in range(lb_iterations, ub_iterations+1):
-		for j in range(lb_size_population, ub_size_population+1):
-			for k in np.arange(lb_beta, ub_beta, 0.1):
-				for l in np.arange(lb_alfa, ub_alfa, 0.1):
-					gbest_path1 = psoInstance_path(i,j,k,l)
-					gbest_paths_of_all_psos.append(gbest_path1)
-					#costs_of_all_psoInstances.append(gbest_path_cost1)
-					df_new = df_new.append({'ITERATION' : i , 'POPULATION' : j , 'BETA' : k , 'ALFA' : l},  ignore_index=True)
-	
-	
-	print(df_new)
+	for i in range(0,10):
+		#print("parsl iteration" + str(i))
+		gbest_path1 = createPsoInstance(10,10,0.9,0.8)
+		gbest_paths_of_all_psos.append(gbest_path1)
+		#costs_of_all_psoInstances.append(gbest_path_cost1)
+		df_new = df_new.append({'ITERATION' : 100 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)
+
+
+	#print(df_new)
 	
 	gbest_path1_values = []
 
 	for i in gbest_paths_of_all_psos:
 		gbest_path1_values.append(i.result())
+		#gbest_path1_values.append(i)
 
 	#print(gbest_path1_values)
 	
@@ -308,5 +334,10 @@ if __name__ == "__main__":
 	print(df_new)
 
 
-	df_new.to_csv (r'/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
+	df_new.to_csv (r'/home/mpiuser/Documents/FYP/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
+
+
+if __name__ == "__main__":
 	
+	step()
+
