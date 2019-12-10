@@ -18,18 +18,17 @@ from parsl import load, python_app
 
 import tsp_graph
 import userScript
-
 import sys
 # insert at 1, 0 is the script path 
-sys.path.insert(1, '/home/mpiuser/Documents/FYP/PSO-GA/configs')
+sys.path.insert(1, '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/configs')
 
 #from local_threads import local_threads
-from local_htex import local_htex
-#from remote_htex import remote_htex
+#from local_htex import local_htex
+from remote_htex import remote_htex
 
 #parsl.load(local_threads)
-parsl.load(local_htex)
-#parsl.load(remote_htex)
+#parsl.load(local_htex)
+parsl.load(remote_htex)
 '''
 # define PSO input parameter : number of iterations
 #iterations=sys.argv[1]

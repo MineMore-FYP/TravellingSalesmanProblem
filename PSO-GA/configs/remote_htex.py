@@ -11,9 +11,9 @@ from parsl.channels import LocalChannel
 from parsl.executors import HighThroughputExecutor
 
 user_opts = {'adhoc':
-             {'username': 'mpiuser',
-              'script_dir': '/home/mpiuser/Downloads/parallel-parsl-workflow/',
-              'remote_hostnames': ['10.0.0.1','10.0.0.2']
+             {'username': 'clusteruser',
+              'script_dir': '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/',
+              'remote_hostnames': ['192.168.1.1','192.168.1.2','192.168.1.3','192.168.1.4','192.168.1.5']
              }
 }
 
@@ -22,8 +22,9 @@ remote_htex = Config(
 	
         HighThroughputExecutor(
             label='remote_htex',
-	    address = '10.0.0.1',
-            max_workers=2,
+	    address = '10.22.200.65',
+            max_workers=5,
+	    cores_per_worker=1,
             #address=address_by_query(),
             worker_logdir_root=user_opts['adhoc']['script_dir'],
             provider=AdHocProvider(
