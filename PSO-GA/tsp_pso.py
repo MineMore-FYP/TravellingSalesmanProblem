@@ -22,13 +22,13 @@ import sys
 # insert at 1, 0 is the script path 
 sys.path.insert(1, '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/configs')
 
-#from local_threads import local_threads
-#from local_htex import local_htex
-from remote_htex import remote_htex
+#from configs.local_threads import local_threads
+from configs.local_htex import local_htex
+#from remote_htex import remote_htex
 
 #parsl.load(local_threads)
-#parsl.load(local_htex)
-parsl.load(remote_htex)
+parsl.load(local_htex)
+#parsl.load(remote_htex)
 '''
 # define PSO input parameter : number of iterations
 #iterations=sys.argv[1]
@@ -182,7 +182,7 @@ class PSO:
 
 		# for each time step (iteration)
 		for t in range(1,self.iterations):
-			print(t)
+			#print(t)
 			'''
 			if t%10 == 0:
 				if t != 0:
@@ -279,7 +279,7 @@ class PSO:
 
 @python_app
 def createPsoInstance(a,b,c,d):
-	print("New PSO instance started")
+	#print("New PSO instance started")
 	#import tsp_graph
 	# creates a PSO instance
 	pso = PSO(tsp_graph.tsp_graph, a, b, c, d)
@@ -307,7 +307,7 @@ def step():
 		gbest_path1 = createPsoInstance(10,10,0.9,0.8)
 		gbest_paths_of_all_psos.append(gbest_path1)
 		#costs_of_all_psoInstances.append(gbest_path_cost1)
-		df_new = df_new.append({'ITERATION' : 100 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)
+		df_new = df_new.append({'ITERATION' : 10 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)
 
 
 	#print(df_new)
@@ -333,7 +333,7 @@ def step():
 	print(df_new)
 
 
-	df_new.to_csv (r'/home/mpiuser/Documents/FYP/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
+	df_new.to_csv ('/home/mpiuser/Documents/FYP/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
 
 
 if __name__ == "__main__":

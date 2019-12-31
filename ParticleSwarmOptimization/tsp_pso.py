@@ -14,7 +14,13 @@
 
 from operator import attrgetter
 import random, sys, time, copy
+import math
 
+import pandas as pd
+import numpy as np
+from io_helper import read_tsp
+
+from userScript import tsp_file_path
 
 # class that represents a graph
 class Graph:
@@ -277,8 +283,59 @@ class PSO:
 					particle.setCostPBest(cost_current_solution)
 		
 
+def calCost(df1,df2,k):
+
+	xcost = df1['x'].iloc[k] - df2['x2'].iloc[k]
+	ycost = df1['y'].iloc[k] - df2['y2'].iloc[k]
+			
+	distance = math.sqrt(xcost**2 + ycost**2)
+
+	x = round(distance)
+	return x
+
+
 if __name__ == "__main__":
+
+	problem = read_tsp(tsp_file_path)
 	
+	points = problem[['city', 'x', 'y']]
+	#print(points)
+
+	vertices = len(points.index)
+
+	# creates the Graph instance
+	graph = Graph(amount_vertices=vertices)
+	
+	columns = ['City1','City2']
+	df_new = pd.DataFrame(columns=columns)
+
+	#startTime = datetime.now().replace(microsecond=0)
+	#print('Start Time: ' + str(startTime) + ' Calculating costs between all the edges .....\n')
+	
+	#cost = []
+	items = range(1,vertices)
+	for i in items:
+		points2 = pd.DataFrame(np.roll(points, i, axis=0))
+		points2.columns = ['city2','x2', 'y2']
+		for j in range(0,vertices):
+			x1 = calCost(points,points2,j)
+			#cost.append(x1)
+			df_new = df_new.append({'City1' : points['city'].iloc[j] , 'City2' : points2['city2'].iloc[j], 'Cost' : x1} , ignore_index=True)
+			
+
+	print(df_new)
+
+	listnew = df_new.values.tolist()
+	print("\nCreated new list\n")
+	
+	tspGraph = set(tuple(x) for x in listnew)
+	print("Created new set\n")
+	
+	# This graph is in the folder "images" of the repository.
+	for value1, value2, key in tspGraph:
+		graph.addEdge(value1, value2, key)
+	print("Added all the edges!\n")
+	''''
 	# creates the Graph instance
 	graph = Graph(amount_vertices=5)
 
@@ -303,14 +360,22 @@ if __name__ == "__main__":
 	graph.addEdge(4, 2, 1)
 	graph.addEdge(3, 4, 2)
 	graph.addEdge(4, 3, 2)
-
+	'''
 	# creates a PSO instance
 	pso = PSO(graph, iterations=100, size_population=10, beta=1, alfa=0.9)
 	pso.run() # runs the PSO algorithm
 	pso.showsParticles() # shows the particles
-
+	
 	# shows the global best particle
 	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
+
+	# creates a PSO instance
+	pso1 = PSO(graph, iterations=100, size_population=10, beta=1, alfa=0.9)
+	pso1.run() # runs the PSO algorithm
+	pso1.showsParticles() # shows the particles
+
+	# shows the global best particle
+	print('gbest: %s | cost: %d\n' % (pso1.getGBest().getPBest(), pso1.getGBest().getCostPBest()))
 
 	'''
 	# random graph

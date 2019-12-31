@@ -1,5 +1,0 @@
-2019-12-10 17:15:12.648 worker_log:467 Rank:2 [INFO]  Worker 2 started
-2019-12-10 17:15:12.685 worker_log:478 Rank:2 [INFO]  Received task 4
-2019-12-10 17:15:13.018 worker_log:496 Rank:2 [INFO]  Completed task 4
-2019-12-10 17:15:13.283 worker_log:478 Rank:2 [INFO]  Received task 6
-2019-12-10 17:15:13.284 worker_log:496 Rank:2 [INFO]  Completed task 6
