@@ -21,6 +21,8 @@ ub_alfa=1
 # Calculate Cost - Parameters(cost.py): 
 tsp_file_path = 'assets/qa194.tsp'
 
+output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+
 
 '''
 # GENETIC ALGORITHM - Parameters :

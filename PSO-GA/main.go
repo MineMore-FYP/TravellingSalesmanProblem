@@ -5,10 +5,15 @@ import (
   "os/exec"
   "fmt"
   "log"
-  "time"
+  //"time"
   "encoding/csv"
-  "io"	
-  //"strconv"
+  "encoding/json"
+  "io/ioutil"
+  //"io"	
+  "strconv"
+  //"bufio"
+  //"strings"
+  //"reflect"
   //userVariableImports "./userVariableImports"
 )
 
@@ -17,11 +22,28 @@ func SendValue(s string, c chan string){
 	c <- s
 }
 
-func pythonCall(progName string){
-	cmd := exec.Command("python3", progName)
+func simplepythonCall(progName string, step string){
+	cmd := exec.Command("python3", progName, step)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os. Stderr
 	log.Println(cmd.Run())
+}
+
+func pythonCall(progName string, inChannel chan <- string, workflowNumber string) {
+	cmd := exec.Command("python3", progName, workflowNumber)
+	out, err := cmd.CombinedOutput()
+	log.Println(cmd.Run())
+
+	if err != nil {
+		fmt.Println(err)
+		// Exit with status 3.
+    os.Exit(3)
+	}
+	fmt.Println(string(out))
+	//check if msg is legit
+	msg := string(out)[:len(out)-1]
+	//msg := ("Module Completed: " + progName)
+	inChannel <- msg
 }
 
 
@@ -32,42 +54,140 @@ func pythonCallFourParams(progName string, para1 string, para2 string, para3 str
 	log.Println(cmd.Run())
 }
 
-func main() {
-	
+func miningPythonCall(progName string, workflowNumber string, itr string) string{
+	cmd := exec.Command("python3", progName, workflowNumber, itr)
+	out, err := cmd.CombinedOutput()
+	log.Println(cmd.Run())
 
-	go pythonCall("tsp_pso.py")
-	fmt.Println("PSO 1st level started")
-	time.Sleep(5000 * time.Millisecond)
-	fmt.Println("PSO 1st level ended")
-	
-	
-	// Open the file
-	csvfile, err := os.Open("/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv")
 	if err != nil {
-		log.Fatalln("Couldn't open the csv file", err)
+		fmt.Println(err)
+		// Exit with status 3.
+    		os.Exit(3)
 	}
+	//fmt.Println(string(out))
+	//check if msg is legit
+	msg := string(out)
+	//msg := ("Module Completed: " + progName)
+	return msg
+}
 
-	// Parse the file
-	r := csv.NewReader(csvfile)
-	//r := csv.NewReader(bufio.NewReader(csvfile))
-	
-	// Iterate through the records
-	for {
-		// Read each record from csv
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
+type Cost_class struct {
+    Path string `json:"path"`
+    Cost float64 `json:"cost"`
+}
+
+func FindMinCost(Cost_set []Cost_class) (max Cost_class) {
+
+	min := Cost_set[0]
+	for _, cost_obj := range Cost_set {
 		
-		path := record[4]
-		cost := record[5]
-		fmt.Printf(paths)
+		if cost_obj.Cost < min.Cost {
+			min = cost_obj
+			if cost_obj.Path == "Path" {
+				continue		
+			}
+		}
 	}
+	return min
+}
 
+func removeIt(ss Cost_class, ssSlice []Cost_class) []Cost_class {
+    for idx, v := range ssSlice {
+        if v == ss {
+            return append(ssSlice[0:idx], ssSlice[idx+1:]...)
+        }
+    }
+    return ssSlice
+}
+
+func costSelection (step string) (min Cost_class) {
+	fmt.Println("Cost selection started")
+	//var files []string
+	cmd := exec.Command("python", "-c", "import userScript; print userScript.output")
+	out, err := cmd.CombinedOutput()
+
+	if err != nil {
+		fmt.Println(err)
+		// Exit with status 3.
+		os.Exit(3)
+	} else if out == nil{
+		os.Exit(3)
+	}
 	
+	costJsonFile := string(out)[:len(out)-1] + step +"_costJson.json"
+	//csvFile, _ := os.Open("/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv")
+
+    	csvfile, err := os.Open(string(out)[:len(out)-1] + step + "_pso_instances.csv")
+   	checkError(err)
+   	defer csvfile.Close()
+ 
+   	reader := csv.NewReader(csvfile)
+ 
+   	reader.FieldsPerRecord = -1
+ 
+   	rawCSVdata, err := reader.ReadAll()
+ 
+   	if err != nil {
+      		fmt.Println(err)
+      		os.Exit(1)
+   	}
+ 
+   	var cost_obj Cost_class
+   	var cost_set []Cost_class
+ 
+   	for _, record := range rawCSVdata {
+		//fmt.Println(record[4])
+		//fmt.Println(reflect.TypeOf(record[4]))
+      		cost_obj.Path = record[4] 
+      		cost_obj.Cost, _ = strconv.ParseFloat(record[5],64)
+      		cost_set = append(cost_set, cost_obj)
+   	}
+ 
+   	//fmt.Println(cost_set)
+	cost_set = removeIt(Cost_class{"Path", 0}, cost_set)
+
+	min = FindMinCost(cost_set)
+	writeCostFile(min, costJsonFile, )
+	//fmt.Println(min)
+	return min
+
+}
+
+func checkError(err error) {
+   if err != nil {
+      fmt.Println("Error:",err)
+      os.Exit(-1)
+   }
+}
+
+func writeCostFile(cost_obj Cost_class, costJsonFile string) {
+
+    costJson, _ := json.Marshal(cost_obj)
+    ioutil.WriteFile(costJsonFile, costJson, 0644)
+    fmt.Println(string(costJson))
+}
+
+func main() {
+	/*
+	inChannelModule1 := make(chan string, 1)
+	outChannelModule1 := make(chan string, 1)
+	pythonCall("tsp_pso.py", inChannelModule1,"1")
+	//pythonCall("workflow/selection/selectUserDefinedColumns.py", inChannelModule1)
+	messagePassing(inChannelModule1, outChannelModule1)
+	fmt.Println(<-outChannelModule1)
+	*/
+
+	simplepythonCall("tsp_pso.py", "1")
+	//time.Sleep(10000 * time.Millisecond)
+	//fmt.Println(x)
+	minCostObj := costSelection("1")
+	fmt.Println(minCostObj)
+
+	simplepythonCall("tsp_pso.py", "2")
+	//time.Sleep(10000 * time.Millisecond)
+	//fmt.Println(x)
+	minCostObj2 := costSelection("2")
+	fmt.Println(minCostObj2)
 
 }
 

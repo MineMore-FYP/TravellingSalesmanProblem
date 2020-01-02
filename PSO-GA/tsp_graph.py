@@ -167,7 +167,7 @@ def createGraph():
 	'''
 	endTime = datetime.now().replace(microsecond=0)
 	
-	np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')
+	#np.savetxt(r'savedFiles/cities_with_costs.txt', df_new.values, fmt='%s %s %i')
 	
 	print('\nEnd Time: ' + str(endTime) + ' Caluculation Done!\n')
 	print('Duration to calculate costs of edges: ' + str(getDuration(startTime,endTime)))

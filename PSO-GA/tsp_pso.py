@@ -15,20 +15,22 @@ import pandas as pd
 import parsl
 from parsl import load, python_app
 
-
+import json
 import tsp_graph
 import userScript
 import sys
 # insert at 1, 0 is the script path 
-sys.path.insert(1, '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/configs')
+#sys.path.insert(1, '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/configs')
 
-#from configs.local_threads import local_threads
-from configs.local_htex import local_htex
+
+from configs.local_threads import local_threads
+#from configs.local_htex import local_htex
 #from remote_htex import remote_htex
 
-#parsl.load(local_threads)
-parsl.load(local_htex)
+parsl.load(local_threads)
+#parsl.load(local_htex)
 #parsl.load(remote_htex)
+
 '''
 # define PSO input parameter : number of iterations
 #iterations=sys.argv[1]
@@ -63,6 +65,7 @@ ub_size_population= userScript.ub_size_population
 ub_beta= userScript.ub_beta
 ub_alfa= userScript.ub_alfa
 
+step = sys.argv[1]
 
 # class that represents a particle
 class Particle:
@@ -278,12 +281,34 @@ class PSO:
 #gbest_path_with_cost_at_tail = []
 
 @python_app
-def createPsoInstance(a,b,c,d):
+def createPsoInstance(a,b,c,d, step):
 	#print("New PSO instance started")
 	#import tsp_graph
 	# creates a PSO instance
 	pso = PSO(tsp_graph.tsp_graph, a, b, c, d)
-	pso.run() # runs the PSO algorithm
+	#print(pso.gbest)
+	
+	if step != "1":
+		#i = int(step)
+		#read json file
+		i = str(int(step)-1)
+		with open(userScript.output + "1_costJson.json", 'r') as myfile:
+    			data=myfile.read()
+
+		# parse file
+		obj = json.loads(data)
+		
+
+		path = obj['path']
+		path = path.replace(" ", '')
+		path = path[1:-1].split(',')
+		cost = obj['cost']
+		pso.setGBest(path)
+		
+		#pso.run() # runs the PSO algorithm
+	
+	pso.run()
+	
 	#pso.showsParticles() # shows the particles
 	
 	
@@ -297,14 +322,14 @@ def createPsoInstance(a,b,c,d):
 	return [gbest_path,gbest_path_cost]
 
 
-def step():
+def stepf():
 	columns = ['ITERATION','POPULATION','BETA','ALFA']
 	df_new = pd.DataFrame(columns=columns)
-
+	
 	gbest_paths_of_all_psos = []
 	for i in range(0,10):
 		#print("parsl iteration" + str(i))
-		gbest_path1 = createPsoInstance(10,10,0.9,0.8)
+		gbest_path1 = createPsoInstance(10,10,0.9,0.8, step)
 		gbest_paths_of_all_psos.append(gbest_path1)
 		#costs_of_all_psoInstances.append(gbest_path_cost1)
 		df_new = df_new.append({'ITERATION' : 10 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)
@@ -333,10 +358,10 @@ def step():
 	print(df_new)
 
 
-	df_new.to_csv ('/home/mpiuser/Documents/FYP/PSO-GA/savedFiles/pso_instances.csv', index = None, header=True)
-
+	df_new.to_csv(userScript.output + step + "_pso_instances.csv", index = None, header=True)
+	print("tsp pso")
 
 if __name__ == "__main__":
 	
-	step()
+	stepf()
 
