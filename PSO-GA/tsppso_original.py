@@ -4,68 +4,94 @@
 	Solution for Travelling Salesman Problem using PSO (Particle Swarm Optimization)
 	Discrete PSO for TSP
 
+	References: 
+		http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.258.7026&rep=rep1&type=pdf
+		http://www.cs.mun.ca/~tinayu/Teaching_files/cs4752/Lecture19_new.pdf
+		http://www.swarmintelligence.org/tutorials.php
+
+	References are in the folder "references" of the repository.
 '''
 
 from operator import attrgetter
 import random, sys, time, copy
 
-import numpy as np
-import pandas as pd
 
-import parsl
-from parsl import load, python_app
+# class that represents a graph
+class Graph:
 
-import json
-import tsp_graph
-import userScript
-import sys
-# insert at 1, 0 is the script path
-#sys.path.insert(1, '/home/clusteruser/TravellingSalesmanProblem/PSO-GA/configs')
+	def __init__(self, amount_vertices):
+		self.edges = {} # dictionary of edges
+		self.vertices = set() # set of vertices
+		self.amount_vertices = amount_vertices # amount of vertices
 
 
-from configs.local_threads import local_threads
-#from configs.local_htex import local_htex
-#from remote_htex import remote_htex
+	# adds a edge linking "src" in "dest" with a "cost"
+	def addEdge(self, src, dest, cost = 0):
+		# checks if the edge already exists
+		if not self.existsEdge(src, dest):
+			self.edges[(src, dest)] = cost
+			self.vertices.add(src)
+			self.vertices.add(dest)
 
-parsl.load(local_threads)
-#parsl.load(local_htex)
-#parsl.load(remote_htex)
 
-'''
-# define PSO input parameter : number of iterations
-#iterations=sys.argv[1]
-iterations=99
-INTiterations=int(iterations)
+	# checks if exists a edge linking "src" in "dest"
+	def existsEdge(self, src, dest):
+		return (True if (src, dest) in self.edges else False)
 
-# define PSO input parameter : size of population
-#size_population=sys.argv[2]
-size_population=9
-INTsize_population=int(size_population)
 
-# define PSO input parameter : beta
-#beta=sys.argv[3]
-beta=0.9
-FLOATbeta=float(beta)
+	# shows all the links of the graph
+	def showGraph(self):
+		print('Showing the graph:\n')
+		for edge in self.edges:
+			print('%d linked in %d with cost %d' % (edge[0], edge[1], self.edges[edge]))
 
-# define PSO input parameter : alpha
-#alfa=sys.argv[4]
-alfa=0.8
-FLOATalfa=float(alfa)
-'''
+	# returns total cost of the path
+	def getCostPath(self, path):
+		
+		total_cost = 0
+		for i in range(self.amount_vertices - 1):
+			total_cost += self.edges[(path[i], path[i+1])]
 
-# Lower Bound
-lb_iterations = userScript.lb_iterations
-lb_size_population= userScript.lb_size_population
-lb_beta= userScript.lb_beta
-lb_alfa= userScript.lb_alfa
+		# add cost of the last edge
+		total_cost += self.edges[(path[self.amount_vertices - 1], path[0])]
+		return total_cost
 
-# Upper Bound
-ub_iterations=  userScript.ub_iterations
-ub_size_population= userScript.ub_size_population
-ub_beta= userScript.ub_beta
-ub_alfa= userScript.ub_alfa
 
-step = sys.argv[1]
+	# gets random unique paths - returns a list of lists of paths
+	def getRandomPaths(self, max_size):
+
+		random_paths, list_vertices = [], list(self.vertices)
+
+		initial_vertice = random.choice(list_vertices)
+		if initial_vertice not in list_vertices:
+			print('Error: initial vertice %d not exists!' % initial_vertice)
+			sys.exit(1)
+
+		list_vertices.remove(initial_vertice)
+		list_vertices.insert(0, initial_vertice)
+
+		for i in range(max_size):
+			list_temp = list_vertices[1:]
+			random.shuffle(list_temp)
+			list_temp.insert(0, initial_vertice)
+
+			if list_temp not in random_paths:
+				random_paths.append(list_temp)
+
+		return random_paths
+
+
+# class that represents a complete graph
+class CompleteGraph(Graph):
+
+	# generates a complete graph
+	def generates(self):
+		for i in range(self.amount_vertices):
+			for j in range(self.amount_vertices):
+				if i != j:
+					weight = random.randint(1, 10)
+					self.addEdge(i, j, weight)
+
 
 # class that represents a particle
 class Particle:
@@ -144,30 +170,23 @@ class PSO:
 
 		# initialized with a group of random particles (solutions)
 		solutions = self.graph.getRandomPaths(self.size_population)
-
+		print("Solutions array ", solutions)
 		# checks if exists any solution
 		if not solutions:
 			print('Initial population empty! Try run the algorithm again...')
 			sys.exit(1)
 
-		#print("#############################################")
-		#print(self.size_population)
-
 		# creates the particles and initialization of swap sequences in all the particles
 		for solution in solutions:
 			# creates a new particle
-			#print(solution)
 			particle = Particle(solution=solution, cost=graph.getCostPath(solution))
 			# add the particle
+			print("Initial solution for particle ", particle, "is ", solution, "\n")
 			self.particles.append(particle)
 
-
-
 		# updates "size_population"
-		#self.size_population = len(self.particles)
+		self.size_population = len(self.particles)
 
-		#print("#############################################")
-		#print(self.size_population)
 
 	# set gbest (best particle of the population)
 	def setGBest(self, new_gbest):
@@ -192,59 +211,27 @@ class PSO:
 	def run(self):
 
 		# for each time step (iteration)
-		for t in range(1,self.iterations):
-			#print(t)
+		for t in range(self.iterations):
+			print("############# ITERATION ", t, "#############")
 
-			if step == "1":
-				# updates gbest (best particle of the population)
-				self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
-
-			elif step != "1":
-				if t == 1:
-					#previous gbest
-					print("#############################################")
-					print(step)
-					i = str(int(step)-1)
-					with open(userScript.output + i+"_costJson.json", 'r') as myfile:
-							data=myfile.read()
-
-					# parse file
-					obj = json.loads(data)
-					path = obj['path']
-					path = path.replace(" ", '')
-					path = path[1:-1].split(',')
-					newPath =[]
-					for i in path:
-						#print(i)
-						x = i.replace("'", "")
-						newPath.append(x)
-					#print(newPath)
-					cost = obj['cost']
-
-					self.setGBest(cost)
-
-				else:
-					# updates gbest (best particle of the population)
-					self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
-
-			#else:
-				# updates gbest (best particle of the population)
-			#	self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
+			# updates gbest (best particle of the population)
+			self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
+			print("Starting gbest at iteration ", t , "is" , self.gbest, "\n")
+			
+			#print("Gbest at iteration", t , " ", self.gbest, "\n")
 
 			# for each particle in the swarm
 			for particle in self.particles:
-				#print("particle : " + str(particle))
+				print("############# PARTICLE ", particle, "#############")
 				particle.clearVelocity() # cleans the speed of the particle
 				temp_velocity = []
-				if step!="1" and t == 1:
-					solution_gbest = newPath
-					#solution_pbest = newPath
-					#solution_particle = newPath
-				else:
-					#check what these are in t==1
-					solution_gbest = copy.copy(self.gbest.getPBest()) # gets solution of the gbest
+				solution_gbest = copy.copy(self.gbest.getPBest()) # gets solution of the gbest
+				print("Solution gbest for iteration ", t, "and particle ", particle, "is", solution_gbest, "\n")
 				solution_pbest = particle.getPBest()[:] # copy of the pbest solution
+				print("Solution pbest for iteration ", t, "and particle ", particle, "is", solution_pbest, "\n")
 				solution_particle = particle.getCurrentSolution()[:] # gets copy of the current solution of the particle
+				print("Solution particle for iteration ", t, "and particle ", particle, "is", solution_particle, "\n")
+		
 
 				# generates all swap operators to calculate (pbest - x(t-1))
 				for i in range(self.graph.amount_vertices):
@@ -274,7 +261,7 @@ class PSO:
 						solution_gbest[swap_operator[0]] = solution_gbest[swap_operator[1]]
 						solution_gbest[swap_operator[1]] = aux
 
-
+				
 				# updates velocity
 				particle.setVelocity(temp_velocity)
 
@@ -285,9 +272,10 @@ class PSO:
 						aux = solution_particle[swap_operator[0]]
 						solution_particle[swap_operator[0]] = solution_particle[swap_operator[1]]
 						solution_particle[swap_operator[1]] = aux
-
+				
 				# updates the current solution
 				particle.setCurrentSolution(solution_particle)
+				print("Updated solution particle", solution_particle)
 				# gets cost of the current solution
 				cost_current_solution = self.graph.getCostPath(solution_particle)
 				# updates the cost of the current solution
@@ -297,75 +285,50 @@ class PSO:
 				if cost_current_solution < particle.getCostPBest():
 					particle.setPBest(solution_particle)
 					particle.setCostPBest(cost_current_solution)
-
-			#filename = 'savedFiles/iterations_' + str(t) + '.txt'
-			#pbestcost = particle.getCostPBest()
-			#np.savetxt(rfilename, t, fmt = '%i')
-			#print(particle.getCostPBest())
-
-#gbest_path_with_cost_at_tail = []
-
-@python_app
-def createPsoInstance(a,b,c,d, step):
-	#print("New PSO instance started")
-	#import tsp_graph
-	# creates a PSO instance
-	pso = PSO(tsp_graph.tsp_graph, a, b, c, d)
-	pso.run()
-
-	#pso.showsParticles() # shows the particles
-
-
-	gbest_path = pso.getGBest().getPBest()
-	gbest_path_cost = pso.getGBest().getCostPBest()
-
-	#gbest_path.append(gbest_path_cost)
-	# shows the global best particle
-	#print('gbest: %s\n' % (gbest_path))
-
-	#print("PSO COMPLETED FOR THE ITERATION " + str(i) + " POPULATION " + str(j) + " BETA " + str(k) + " ALFA " + str(l))
-	return [gbest_path,gbest_path_cost]
-
-
-def stepf():
-	columns = ['ITERATION','POPULATION','BETA','ALFA']
-	df_new = pd.DataFrame(columns=columns)
-
-	gbest_paths_of_all_psos = []
-	for i in range(0,10):
-		#print("parsl iteration" + str(i))
-		gbest_path1 = createPsoInstance(10,10,0.9,0.8, step)
-		gbest_paths_of_all_psos.append(gbest_path1)
-		#costs_of_all_psoInstances.append(gbest_path_cost1)
-		df_new = df_new.append({'ITERATION' : 10 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)
-
-
-	#print(df_new)
-
-	gbest_path1_values = []
-
-	for i in gbest_paths_of_all_psos:
-		gbest_path1_values.append(i.result())
-		#gbest_path1_values.append(i)
-
-	#print(gbest_path1_values)
-
-	path = []
-	cost = []
-
-	for i in gbest_path1_values:
-		path.append(i[0])
-		cost.append(i[1])
-
-	df_new['Path'] = path
-	df_new['Cost'] = cost
-
-	print(df_new)
-
-
-	df_new.to_csv(userScript.output + step + "_pso_instances.csv", index = None, header=True)
-	print("tsp pso")
+		
 
 if __name__ == "__main__":
+	
+	# creates the Graph instance
+	graph = Graph(amount_vertices=5)
 
-	stepf()
+	# This graph is in the folder "images" of the repository.
+	graph.addEdge(0, 1, 1)
+	graph.addEdge(1, 0, 1)
+	graph.addEdge(0, 2, 3)
+	graph.addEdge(2, 0, 3)
+	graph.addEdge(0, 3, 4)
+	graph.addEdge(3, 0, 4)
+	graph.addEdge(0, 4, 5)
+	graph.addEdge(4, 0, 5)
+	graph.addEdge(1, 2, 1)
+	graph.addEdge(2, 1, 1)
+	graph.addEdge(1, 3, 4)
+	graph.addEdge(3, 1, 4)
+	graph.addEdge(1, 4, 8)
+	graph.addEdge(4, 1, 8)
+	graph.addEdge(2, 3, 5)
+	graph.addEdge(3, 2, 5)
+	graph.addEdge(2, 4, 1)
+	graph.addEdge(4, 2, 1)
+	graph.addEdge(3, 4, 2)
+	graph.addEdge(4, 3, 2)
+
+	# creates a PSO instance
+	pso = PSO(graph, iterations=10, size_population=10, beta=1, alfa=1)
+	pso.run() # runs the PSO algorithm
+	pso.showsParticles() # shows the particles
+
+	# shows the global best particle
+	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
+
+	'''
+	# random graph
+	print('Random graph...')
+	random_graph = CompleteGraph(amount_vertices=20)
+	random_graph.generates()
+	pso_random_graph = PSO(random_graph, iterations=10000, size_population=10, beta=1, alfa=1)
+	pso_random_graph.run()
+	print('gbest: %s | cost: %d\n' % (pso_random_graph.getGBest().getPBest(), 
+					pso_random_graph.getGBest().getCostPBest()))
+	'''

@@ -9,7 +9,7 @@ import (
   "encoding/csv"
   "encoding/json"
   "io/ioutil"
-  //"io"	
+  //"io"
   "strconv"
   //"bufio"
   //"strings"
@@ -80,11 +80,11 @@ func FindMinCost(Cost_set []Cost_class) (max Cost_class) {
 
 	min := Cost_set[0]
 	for _, cost_obj := range Cost_set {
-		
+
 		if cost_obj.Cost < min.Cost {
 			min = cost_obj
 			if cost_obj.Path == "Path" {
-				continue		
+				continue
 			}
 		}
 	}
@@ -113,36 +113,36 @@ func costSelection (step string) (min Cost_class) {
 	} else if out == nil{
 		os.Exit(3)
 	}
-	
+
 	costJsonFile := string(out)[:len(out)-1] + step +"_costJson.json"
 	//csvFile, _ := os.Open("/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/pso_instances.csv")
 
     	csvfile, err := os.Open(string(out)[:len(out)-1] + step + "_pso_instances.csv")
    	checkError(err)
    	defer csvfile.Close()
- 
+
    	reader := csv.NewReader(csvfile)
- 
+
    	reader.FieldsPerRecord = -1
- 
+
    	rawCSVdata, err := reader.ReadAll()
- 
+
    	if err != nil {
       		fmt.Println(err)
       		os.Exit(1)
    	}
- 
+
    	var cost_obj Cost_class
    	var cost_set []Cost_class
- 
+
    	for _, record := range rawCSVdata {
 		//fmt.Println(record[4])
 		//fmt.Println(reflect.TypeOf(record[4]))
-      		cost_obj.Path = record[4] 
+      		cost_obj.Path = record[4]
       		cost_obj.Cost, _ = strconv.ParseFloat(record[5],64)
       		cost_set = append(cost_set, cost_obj)
    	}
- 
+
    	//fmt.Println(cost_set)
 	cost_set = removeIt(Cost_class{"Path", 0}, cost_set)
 
@@ -188,7 +188,9 @@ func main() {
 	//fmt.Println(x)
 	minCostObj2 := costSelection("2")
 	fmt.Println(minCostObj2)
-
+/*
+  simplepythonCall("tsp_pso.py", "3")
+  minCostObj3 := costSelection("3")
+	fmt.Println(minCostObj3)
+*/
 }
-
-

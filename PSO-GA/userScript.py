@@ -7,21 +7,22 @@ import sys
 
 # PARTICLE SWARM OPTIMIZATION ALGORITHM - Parameters :
 # Lower Bound
-lb_iterations=99 
+lb_iterations=99
 lb_size_population=9
 lb_beta=0.9
 lb_alfa=0.8
 
 # Upper Bound
-ub_iterations=101 
+ub_iterations=101
 ub_size_population=11
 ub_beta=1.1
 ub_alfa=1
 
-# Calculate Cost - Parameters(cost.py): 
+# Calculate Cost - Parameters(cost.py):
 tsp_file_path = 'assets/qa194.tsp'
 
-output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+#output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+output = "/home/amanda/Desktop/SciFlow/TravellingSalesmanProblem/PSO-GA/savedFiles/"
 
 
 '''
@@ -38,6 +39,3 @@ initial_low = -4.0
 # Random Initial Population Upper Bound
 initial_high = 4.0
 '''
-		
-
-
