@@ -188,9 +188,17 @@ func main() {
 	//fmt.Println(x)
 	minCostObj2 := costSelection("2")
 	fmt.Println(minCostObj2)
-/*
+
   simplepythonCall("tsp_pso.py", "3")
   minCostObj3 := costSelection("3")
 	fmt.Println(minCostObj3)
-*/
+
+  simplepythonCall("tsp_pso.py", "4")
+  minCostObj4 := costSelection("4")
+	fmt.Println(minCostObj4)
+
+  simplepythonCall("tsp_pso.py", "5")
+  minCostObj5 := costSelection("5")
+	fmt.Println(minCostObj5)
+
 }
