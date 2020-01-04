@@ -4,7 +4,7 @@
 	Solution for Travelling Salesman Problem using PSO (Particle Swarm Optimization)
 	Discrete PSO for TSP
 
-	References: 
+	References:
 		http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.258.7026&rep=rep1&type=pdf
 		http://www.cs.mun.ca/~tinayu/Teaching_files/cs4752/Lecture19_new.pdf
 		http://www.swarmintelligence.org/tutorials.php
@@ -47,7 +47,7 @@ class Graph:
 
 	# returns total cost of the path
 	def getCostPath(self, path):
-		
+
 		total_cost = 0
 		for i in range(self.amount_vertices - 1):
 			total_cost += self.edges[(path[i], path[i+1])]
@@ -218,6 +218,7 @@ class PSO:
 			self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
 			print("Starting gbest at iteration ", t , "is" , self.gbest, "\n")
 			
+			print(self.getGBest())
 			#print("Gbest at iteration", t , " ", self.gbest, "\n")
 
 			# for each particle in the swarm
@@ -231,7 +232,7 @@ class PSO:
 				print("Solution pbest for iteration ", t, "and particle ", particle, "is", solution_pbest, "\n")
 				solution_particle = particle.getCurrentSolution()[:] # gets copy of the current solution of the particle
 				print("Solution particle for iteration ", t, "and particle ", particle, "is", solution_particle, "\n")
-		
+
 
 				# generates all swap operators to calculate (pbest - x(t-1))
 				for i in range(self.graph.amount_vertices):
@@ -261,7 +262,7 @@ class PSO:
 						solution_gbest[swap_operator[0]] = solution_gbest[swap_operator[1]]
 						solution_gbest[swap_operator[1]] = aux
 
-				
+
 				# updates velocity
 				particle.setVelocity(temp_velocity)
 
@@ -272,7 +273,7 @@ class PSO:
 						aux = solution_particle[swap_operator[0]]
 						solution_particle[swap_operator[0]] = solution_particle[swap_operator[1]]
 						solution_particle[swap_operator[1]] = aux
-				
+
 				# updates the current solution
 				particle.setCurrentSolution(solution_particle)
 				print("Updated solution particle", solution_particle)
@@ -285,10 +286,10 @@ class PSO:
 				if cost_current_solution < particle.getCostPBest():
 					particle.setPBest(solution_particle)
 					particle.setCostPBest(cost_current_solution)
-		
+
 
 if __name__ == "__main__":
-	
+
 	# creates the Graph instance
 	graph = Graph(amount_vertices=5)
 
@@ -329,6 +330,6 @@ if __name__ == "__main__":
 	random_graph.generates()
 	pso_random_graph = PSO(random_graph, iterations=10000, size_population=10, beta=1, alfa=1)
 	pso_random_graph.run()
-	print('gbest: %s | cost: %d\n' % (pso_random_graph.getGBest().getPBest(), 
+	print('gbest: %s | cost: %d\n' % (pso_random_graph.getGBest().getPBest(),
 					pso_random_graph.getGBest().getCostPBest()))
 	'''
