@@ -17,11 +17,6 @@ import (
   //userVariableImports "./userVariableImports"
 )
 
-func SendValue(s string, c chan string){
-	//send value through channel c
-	c <- s
-}
-
 func simplepythonCall(progName string, step string){
 	cmd := exec.Command("python3", progName, step)
 	cmd.Stdout = os.Stdout
@@ -29,8 +24,8 @@ func simplepythonCall(progName string, step string){
 	log.Println(cmd.Run())
 }
 
-func pythonCall(progName string, inChannel chan <- string, workflowNumber string) {
-	cmd := exec.Command("python3", progName, workflowNumber)
+func pythonCall(progName string, inChannel chan <- string, step string) {
+	cmd := exec.Command("python3", progName, step)
 	out, err := cmd.CombinedOutput()
 	log.Println(cmd.Run())
 
@@ -46,29 +41,9 @@ func pythonCall(progName string, inChannel chan <- string, workflowNumber string
 	inChannel <- msg
 }
 
-
-func pythonCallFourParams(progName string, para1 string, para2 string, para3 string, para4 string) {
-	cmd := exec.Command("python3", progName, para1, para2, para3, para4)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	log.Println(cmd.Run())
-}
-
-func miningPythonCall(progName string, workflowNumber string, itr string) string{
-	cmd := exec.Command("python3", progName, workflowNumber, itr)
-	out, err := cmd.CombinedOutput()
-	log.Println(cmd.Run())
-
-	if err != nil {
-		fmt.Println(err)
-		// Exit with status 3.
-    		os.Exit(3)
-	}
-	//fmt.Println(string(out))
-	//check if msg is legit
-	msg := string(out)
-	//msg := ("Module Completed: " + progName)
-	return msg
+func messagePassing(inChannel <- chan string, outChannel chan <- string ){
+	msg := <- inChannel
+	outChannel <- msg
 }
 
 type Cost_class struct {
@@ -168,15 +143,26 @@ func writeCostFile(cost_obj Cost_class, costJsonFile string) {
 }
 
 func main() {
-	/*
+
 	inChannelModule1 := make(chan string, 1)
 	outChannelModule1 := make(chan string, 1)
 	pythonCall("tsp_pso.py", inChannelModule1,"1")
 	//pythonCall("workflow/selection/selectUserDefinedColumns.py", inChannelModule1)
 	messagePassing(inChannelModule1, outChannelModule1)
+  minCostObj1 := costSelection("1")
+	fmt.Println(minCostObj1)
 	fmt.Println(<-outChannelModule1)
-	*/
 
+
+  outChannelModule2 := make(chan string, 1)
+  pythonCall("tsp_pso.py", outChannelModule1,"2")
+	//pythonCall("workflow/selection/selectUserDefinedColumns.py", inChannelModule1)
+	messagePassing(outChannelModule1, outChannelModule2)
+  minCostObj2 := costSelection("1")
+	fmt.Println(minCostObj2)
+	fmt.Println(<-outChannelModule2)
+
+/*
 	simplepythonCall("tsp_pso.py", "1")
 	//time.Sleep(10000 * time.Millisecond)
 	//fmt.Println(x)
@@ -200,5 +186,6 @@ func main() {
   simplepythonCall("tsp_pso.py", "5")
   minCostObj5 := costSelection("5")
 	fmt.Println(minCostObj5)
+*/
 
 }

@@ -177,24 +177,18 @@ class PSO:
 			#print(newPath)
 			costOfPrevious = obj['cost']
 
-
-
-
-
 		# creates the particles and initialization of swap sequences in all the particles
 		for solution in solutions:
 			if count == 0 and step != "1":
-				particle = Particle(solution=newPath, cost=costOfPrevious)
+				#extra new particle
+				particle1 = Particle(solution=newPath, cost=costOfPrevious)
+				self.particles.append(particle1)
 			# creates a new particle
 			#print(solution)
-			else:
-				particle = Particle(solution=solution, cost=graph.getCostPath(solution))
-
+			particle = Particle(solution=solution, cost=graph.getCostPath(solution))
 			count = count + 1
 			# add the particle
 			self.particles.append(particle)
-
-
 
 		# updates "size_population"
 		self.size_population = len(self.particles)
@@ -226,41 +220,6 @@ class PSO:
 
 		# for each time step (iteration)
 		for t in range(1,self.iterations):
-			#print(t)
-			'''
-			if step == "1":
-				# updates gbest (best particle of the population)
-				self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
-
-			elif step != "1":
-				if t == 1:
-					#previous gbest
-					print("#############################################")
-					print(step)
-					i = str(int(step)-1)
-					with open(userScript.output + i+"_costJson.json", 'r') as myfile:
-							data=myfile.read()
-
-					# parse file
-					obj = json.loads(data)
-					path = obj['path']
-					path = path.replace(" ", '')
-					path = path[1:-1].split(',')
-					newPath =[]
-					for i in path:
-						#print(i)
-						x = i.replace("'", "")
-						newPath.append(x)
-					#print(newPath)
-					cost = obj['cost']
-
-					self.setGBest(cost)
-
-				else:
-					# updates gbest (best particle of the population)
-					self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
-				'''
-
 			self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
 
 			# for each particle in the swarm
@@ -405,3 +364,4 @@ def stepf():
 if __name__ == "__main__":
 
 	stepf()
+	print("TSP-PSO Step ", step, " completed." )
