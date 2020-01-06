@@ -143,7 +143,7 @@ func writeCostFile(cost_obj Cost_class, costJsonFile string) {
 }
 
 func main() {
-
+/*
 	inChannelModule1 := make(chan string, 1)
 	outChannelModule1 := make(chan string, 1)
 	pythonCall("tsp_pso.py", inChannelModule1,"1")
@@ -161,31 +161,15 @@ func main() {
   minCostObj2 := costSelection("1")
 	fmt.Println(minCostObj2)
 	fmt.Println(<-outChannelModule2)
-
-/*
-	simplepythonCall("tsp_pso.py", "1")
-	//time.Sleep(10000 * time.Millisecond)
-	//fmt.Println(x)
-	minCostObj := costSelection("1")
-	fmt.Println(minCostObj)
-
-	simplepythonCall("tsp_pso.py", "2")
-	//time.Sleep(10000 * time.Millisecond)
-	//fmt.Println(x)
-	minCostObj2 := costSelection("2")
-	fmt.Println(minCostObj2)
-
-  simplepythonCall("tsp_pso.py", "3")
-  minCostObj3 := costSelection("3")
-	fmt.Println(minCostObj3)
-
-  simplepythonCall("tsp_pso.py", "4")
-  minCostObj4 := costSelection("4")
-	fmt.Println(minCostObj4)
-
-  simplepythonCall("tsp_pso.py", "5")
-  minCostObj5 := costSelection("5")
-	fmt.Println(minCostObj5)
 */
+
+  for i:=71; i<=100; i++ {
+    x := strconv.Itoa(i)
+    simplepythonCall("tsp_pso.py", x)
+    //time.Sleep(10000 * time.Millisecond)
+    //fmt.Println(x)
+    minCostObj := costSelection(x)
+    fmt.Println(minCostObj)
+  }
 
 }
