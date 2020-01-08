@@ -22,7 +22,7 @@ ub_alfa=1
 tsp_file_path = 'assets/qa194.tsp'
 
 #output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
-output = "/home/amanda/Desktop/SciFlow/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+#output = "/home/amanda/Desktop/SciFlow/TravellingSalesmanProblem/PSO-GA/savedFiles/"
 
 
 '''
