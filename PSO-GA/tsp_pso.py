@@ -329,7 +329,7 @@ def stepf():
 	gbest_paths_of_all_psos = []
 	for i in range(0,50):
 		#print("parsl iteration" + str(i))
-		gbest_path1 = createPsoInstance(1500,100,0.9,0.8)
+		gbest_path1 = createPsoInstance(1500,15,0.9,0.8)
 		gbest_paths_of_all_psos.append(gbest_path1)
 		#costs_of_all_psoInstances.append(gbest_path_cost1)
 		df_new = df_new.append({'ITERATION' : 10 , 'POPULATION' : 10 , 'BETA' : 0.9 , 'ALFA' : 0.8},  ignore_index=True)

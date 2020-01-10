@@ -26,6 +26,7 @@ tsp_file_path = 'assets/qa194.tsp'
 output = "/home/mpiuser/Documents/TravellingSalesmanProblem/PSO-GA/savedFiles/"
 
 
+
 '''
 # GENETIC ALGORITHM - Parameters :
 

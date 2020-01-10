@@ -5,7 +5,7 @@ import (
   "os/exec"
   "fmt"
   "log"
-  //"time"
+  "time"
   "encoding/csv"
   "encoding/json"
   "io/ioutil"
@@ -143,6 +143,8 @@ func writeCostFile(cost_obj Cost_class, costJsonFile string) {
 }
 
 func main() {
+  start := time.Now()
+
 /*
 	inChannelModule1 := make(chan string, 1)
 	outChannelModule1 := make(chan string, 1)
@@ -163,7 +165,7 @@ func main() {
 	fmt.Println(<-outChannelModule2)
 */
 
-  for i:=101; i<=150; i++ {
+  for i:=1; i<=20; i++ {
     x := strconv.Itoa(i)
     simplepythonCall("tsp_pso.py", x)
     //time.Sleep(10000 * time.Millisecond)
@@ -171,5 +173,11 @@ func main() {
     minCostObj := costSelection(x)
     fmt.Println(minCostObj)
   }
+
+  end := time.Now()
+
+	duration := end.Sub(start)
+
+	fmt.Println("\nDuration: " + duration.String())
 
 }
