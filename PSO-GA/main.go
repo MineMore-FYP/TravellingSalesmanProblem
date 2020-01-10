@@ -163,7 +163,7 @@ func main() {
 	fmt.Println(<-outChannelModule2)
 */
 
-  for i:=71; i<=100; i++ {
+  for i:=101; i<=150; i++ {
     x := strconv.Itoa(i)
     simplepythonCall("tsp_pso.py", x)
     //time.Sleep(10000 * time.Millisecond)
