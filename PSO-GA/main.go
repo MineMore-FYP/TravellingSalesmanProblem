@@ -142,7 +142,6 @@ func writeCostFile(cost_obj Cost_class, costJsonFile string) {
     fmt.Println(string(costJson))
 }
 
-
 func pythonCall(progName string, sendChannel chan <- string, itr string) {
 	cmd := exec.Command("python3", progName, itr)
 	out, err := cmd.CombinedOutput()
