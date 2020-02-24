@@ -21,9 +21,11 @@ ub_alfa=1
 # Calculate Cost - Parameters(cost.py):
 tsp_file_path = 'assets/eil51.tsp'
 
-output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
-#output = "/home/amanda/Desktop/SciFlow/TravellingSalesmanProblem/PSO-GA/savedFiles/"
-#output = "/home/mpiuser/Documents/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+#output = "/home/mpiuser/Documents/FYP/TravellingSalesmanProblem/PSO-GA/savedFiles/"
+output = "/home/amanda/Desktop/SciFlow/TravellingSalesmanProblem/PSO-GA/savedFiles/eil51/"
+
+#go steps
+steps = 100
 
 
 '''

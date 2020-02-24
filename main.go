@@ -5,7 +5,7 @@ import (
   "os/exec"
   "fmt"
   "log"
-  //"time"
+  "time"
   "encoding/csv"
   "encoding/json"
   "io/ioutil"
@@ -23,7 +23,7 @@ func simplepythonCall(progName string, step string){
 	cmd.Stderr = os. Stderr
 	log.Println(cmd.Run())
 }
-/*
+
 func pythonCall(progName string, inChannel chan <- string, step string) {
 	cmd := exec.Command("python3", progName, step)
 	out, err := cmd.CombinedOutput()
@@ -40,7 +40,7 @@ func pythonCall(progName string, inChannel chan <- string, step string) {
 	//msg := ("Module Completed: " + progName)
 	inChannel <- msg
 }
-*/
+
 func messagePassing(inChannel <- chan string, outChannel chan <- string ){
 	msg := <- inChannel
 	outChannel <- msg
@@ -77,7 +77,6 @@ func removeIt(ss Cost_class, ssSlice []Cost_class) []Cost_class {
 
 func costSelection (step string) (min Cost_class) {
 	fmt.Println("Cost selection started")
-	//var files []string
 	cmd := exec.Command("python", "-c", "import userScript; print userScript.output")
 	out, err := cmd.CombinedOutput()
 
@@ -142,36 +141,47 @@ func writeCostFile(cost_obj Cost_class, costJsonFile string) {
     fmt.Println(string(costJson))
 }
 
-func pythonCall(progName string, sendChannel chan <- string, itr string) {
-	cmd := exec.Command("python3", progName, itr)
-	out, err := cmd.CombinedOutput()
-	log.Println(cmd.Run())
-
-	if err != nil {
-		fmt.Println(err)
-		// Exit with status 3.
-    		os.Exit(3)
-	}
-	
-	fmt.Println(string(out))
-	msg := string(out)[:len(out)-1]
-	sendChannel <- msg
-}
-
-
-func loop(program string, goSteps int){
-	for i:=1; i<=goSteps; i++ {
-		sendChannel := make(chan string, 1)
-		receiveChannel := make(chan string, 1)
-		pythonCall(program, sendChannel, strconv.Itoa(i))
-		minCostObj := costSelection(strconv.Itoa(i))
-    		fmt.Println(minCostObj)
-		msg := <- sendChannel 	
-		receiveChannel <- msg
-	}
-	
-}
-
 func main() {
-	loop("tsp_pso.py", 10)
+  start := time.Now()
+
+  for i:=1; i<=50; i++ {
+    x := strconv.Itoa(i)
+    simplepythonCall("tsp_pso.py", x)
+    //time.Sleep(10000 * time.Millisecond)
+    //fmt.Println(x)
+    minCostObj := costSelection(x)
+    fmt.Println(minCostObj)
+  }
+
+  end := time.Now()
+
+	duration := end.Sub(start)
+
+	fmt.Println("\nDuration: " + duration.String())
+
 }
+
+
+
+
+
+
+/*
+	inChannelModule1 := make(chan string, 1)
+	outChannelModule1 := make(chan string, 1)
+	pythonCall("tsp_pso.py", inChannelModule1,"1")
+	//pythonCall("workflow/selection/selectUserDefinedColumns.py", inChannelModule1)
+	messagePassing(inChannelModule1, outChannelModule1)
+  minCostObj1 := costSelection("1")
+	fmt.Println(minCostObj1)
+	fmt.Println(<-outChannelModule1)
+
+
+  outChannelModule2 := make(chan string, 1)
+  pythonCall("tsp_pso.py", outChannelModule1,"2")
+	//pythonCall("workflow/selection/selectUserDefinedColumns.py", inChannelModule1)
+	messagePassing(outChannelModule1, outChannelModule2)
+  minCostObj2 := costSelection("1")
+	fmt.Println(minCostObj2)
+	fmt.Println(<-outChannelModule2)
+*/
